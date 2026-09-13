@@ -2,14 +2,16 @@
 import { useState } from 'react';
 
 export default function Home() {
-  const [character, setCharacter] = useState('Dewi Sri');
-  const [theme, setTheme] = useState('Culture of the Future');
+  const [character, setCharacter] = useState('Ratu Shima');
+  const [theme, setTheme] = useState('Culture of the Future (Cyberpunk)');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleGenerate = async () => {
     setLoading(true);
     setResult(null);
+    setErrorMsg('');
 
     try {
       const res = await fetch('/api/generate', {
@@ -18,36 +20,43 @@ export default function Home() {
         body: JSON.stringify({ character, theme }),
       });
       const data = await res.json();
-      if (data.success) setResult(data.data);
+      
+      if (data.success) {
+        setResult(data.data);
+      } else {
+        setErrorMsg(data.error || 'Terjadi kesalahan pada sistem AI.');
+      }
     } catch (err) {
-      alert('Gagal memproses data');
+      setErrorMsg('Gagal terhubung ke server. Periksa koneksi internet Anda.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '500px', margin: '0 auto' }}>
-      <h2>Nusantara Cyber-Heritage AI</h2>
+    <main style={{ padding: '20px', fontFamily: 'system-ui, sans-serif', maxWidth: '600px', margin: '0 auto', minHeight: '100vh', boxSizing: 'border-box' }}>
+      <h1 style={{ textAlign: 'center', fontSize: '24px', marginBottom: '20px', color: '#38bdf8' }}>
+        Nusantara Cyber-Heritage AI
+      </h1>
       
-      <div style={{ marginBottom: '15px' }}>
-        <label>Tokoh / Objek Budaya:</label>
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Tokoh / Objek Budaya:</label>
         <input 
           type="text" 
           value={character} 
           onChange={(e) => setCharacter(e.target.value)}
-          style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
+          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '16px', boxSizing: 'border-box' }}
         />
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label>Pilih Tema:</label>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema:</label>
         <select 
           value={theme} 
           onChange={(e) => setTheme(e.target.value)}
-          style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
+          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '16px', boxSizing: 'border-box' }}
         >
-          <option value="Culture of the Future">Culture of the Future (Cyberpunk)</option>
+          <option value="Culture of the Future (Cyberpunk)">Culture of the Future (Cyberpunk)</option>
           <option value="Pelestarian Cultural Classic">Pelestarian Cultural Classic</option>
         </select>
       </div>
@@ -55,29 +64,56 @@ export default function Home() {
       <button 
         onClick={handleGenerate} 
         disabled={loading}
-        style={{ width: '100%', padding: '12px', background: '#0070f3', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}
+        style={{ 
+          width: '100%', 
+          padding: '14px', 
+          background: loading ? '#475569' : '#0284c7', 
+          color: '#fff', 
+          border: 'none', 
+          borderRadius: '8px', 
+          fontWeight: 'bold', 
+          fontSize: '16px',
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
       >
-        {loading ? 'Memproses AI...' : 'Generate Asset & Rarity (98+)'}
+        {loading ? '⏳ Memproses AI Engine...' : 'Generate Asset & Rarity (98+)'}
       </button>
 
-      {result && (
-        <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #e0e0e0', borderRadius: '8px', background: '#f9f9f9' }}>
-          <h3 style={{ color: '#2e7d32' }}>Rarity Score: {result.rarityScore} / 100</h3>
-          
-          <h4>Prompt Visual AI:</h4>
-          <p style={{ fontSize: '12px', background: '#eee', padding: '8px', borderRadius: '4px' }}>{result.generatedPrompt}</p>
+      {errorMsg && (
+        <div style={{ marginTop: '20px', padding: '15px', borderRadius: '8px', backgroundColor: '#7f1d1d', color: '#fecaca', border: '1px solid #ef4444' }}>
+          <strong>Error:</strong> {errorMsg}
+        </div>
+      )}
 
-          <h4>Mythic Traits:</h4>
-          <ul>
-            {result.traits.map((t, idx) => (
-              <li key={idx}><strong>{t.category}:</strong> {t.value}</li>
+      {result && (
+        <div style={{ marginTop: '24px', padding: '20px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #38bdf8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', color: '#38bdf8' }}>Mythic NFT Asset</h2>
+            <span style={{ backgroundColor: '#15803d', color: '#bbf7d0', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px' }}>
+              Skor: {result.rarityScore} / 100
+            </span>
+          </div>
+          
+          <h4 style={{ color: '#94a3b8', marginBottom: '5px' }}>Prompt Visual AI:</h4>
+          <p style={{ fontSize: '13px', backgroundColor: '#0f172a', padding: '10px', borderRadius: '6px', border: '1px solid #334155', color: '#cbd5e1', wordBreak: 'break-word' }}>
+            {result.generatedPrompt}
+          </p>
+
+          <h4 style={{ color: '#94a3b8', marginBottom: '5px' }}>Mythic Traits:</h4>
+          <ul style={{ paddingLeft: '20px', margin: '0 0 15px 0' }}>
+            {result.traits?.map((t, idx) => (
+              <li key={idx} style={{ marginBottom: '4px' }}>
+                <strong style={{ color: '#f1f5f9' }}>{t.category}:</strong> <span style={{ color: '#38bdf8' }}>{t.value}</span>
+              </li>
             ))}
           </ul>
 
-          <h4>{result.storyTitle}</h4>
-          <p>{result.storyScript}</p>
+          <h3 style={{ color: '#f8fafc', borderTop: '1px solid #334155', paddingTop: '15px', marginTop: '15px' }}>{result.storyTitle}</h3>
+          <p style={{ lineHeight: '1.6', color: '#cbd5e1', fontSize: '14px' }}>{result.storyScript}</p>
 
-          <p><em>🎵 Audio Background: {result.audioAtmosphere}</em></p>
+          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#0f172a', borderRadius: '6px', fontSize: '13px', color: '#f59e0b' }}>
+            🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
+          </div>
         </div>
       )}
     </main>
