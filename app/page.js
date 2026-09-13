@@ -4,6 +4,7 @@ import { useState } from 'react';
 export default function Home() {
   const [character, setCharacter] = useState('Ratu Shima');
   const [theme, setTheme] = useState('Culture of the Future (Cyberpunk)');
+  const [enableWatermark, setEnableWatermark] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -17,7 +18,7 @@ export default function Home() {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ character, theme }),
+        body: JSON.stringify({ character, theme, enableWatermark }),
       });
       const data = await res.json();
       
@@ -49,7 +50,7 @@ export default function Home() {
         />
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema:</label>
         <select 
           value={theme} 
@@ -59,6 +60,19 @@ export default function Home() {
           <option value="Culture of the Future (Cyberpunk)">Culture of the Future (Cyberpunk)</option>
           <option value="Pelestarian Cultural Classic">Pelestarian Cultural Classic</option>
         </select>
+      </div>
+
+      <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <strong style={{ display: 'block', fontSize: '14px', color: '#f8fafc' }}>🛡️ Advanced Provenance Watermark</strong>
+          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Sematkan tanda tangan digital & hash autentisitas</span>
+        </div>
+        <input 
+          type="checkbox" 
+          checked={enableWatermark} 
+          onChange={(e) => setEnableWatermark(e.target.checked)}
+          style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+        />
       </div>
 
       <button 
@@ -76,7 +90,7 @@ export default function Home() {
           cursor: loading ? 'not-allowed' : 'pointer'
         }}
       >
-        {loading ? '⏳ Memproses AI Engine...' : 'Generate Asset & Rarity (98+)'}
+        {loading ? '⏳ Memproses Gemini 3.6 Flash Engine...' : 'Generate Asset & Rarity (98+)'}
       </button>
 
       {errorMsg && (
@@ -114,6 +128,14 @@ export default function Home() {
           <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#0f172a', borderRadius: '6px', fontSize: '13px', color: '#f59e0b' }}>
             🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
           </div>
+
+          {result.watermark?.enabled && (
+            <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#0284c715', border: '1px solid #0284c7', borderRadius: '8px', fontSize: '12px', color: '#e0f2fe' }}>
+              <div style={{ fontWeight: 'bold', color: '#38bdf8', marginBottom: '4px' }}>🛡️ Digital Watermark Provenance Verified</div>
+              <div><strong>Signature:</strong> {result.watermark.digitalSignature}</div>
+              <div style={{ fontSize: '10px', color: '#94a3b8', wordBreak: 'break-all', marginTop: '4px' }}><strong>SHA256 Hash:</strong> {result.watermark.fullHash}</div>
+            </div>
+          )}
         </div>
       )}
     </main>
