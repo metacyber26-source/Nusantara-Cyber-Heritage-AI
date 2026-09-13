@@ -34,7 +34,7 @@ export default function Home() {
     }
   };
 
-  // Fungsi khusus untuk mengunduh gambar langsung ke HP/perangkat
+  // Fungsi Download Gambar langsung
   const downloadImage = async (url, filename) => {
     try {
       const response = await fetch(url);
@@ -120,7 +120,6 @@ export default function Home() {
       {result && (
         <div style={{ marginTop: '24px', padding: '20px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #38bdf8', boxSizing: 'border-box' }}>
           
-          {/* Header Card */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', color: '#38bdf8' }}>Mythic Visual Asset</h2>
             <span style={{ backgroundColor: '#15803d', color: '#bbf7d0', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px' }}>
@@ -128,20 +127,27 @@ export default function Home() {
             </span>
           </div>
 
-          {/* DISPLAY GAMBAR SELEBAR LAYAR PORTOFOLIO */}
-          <div style={{ position: 'relative', width: '100%', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
+          {/* KONTEN GAMBAR DENGAN MASKING PENGHAPUS WATERMARK BAWAAN */}
+          <div style={{ position: 'relative', width: '100%', height: '380px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
             <img 
               src={result.imageUrl} 
               alt={character}
-              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', transform: 'scale(1.02)' }} 
+              style={{ 
+                width: '104%', 
+                height: '105%', 
+                marginTop: '-2%',
+                marginLeft: '-2%',
+                objectFit: 'cover' 
+              }} 
             />
-            {/* Overlay Provenance Watermark Digital */}
+
+            {/* Overlay Watermark Provenance Digital (Jika Diaktifkan) */}
             {result.watermark?.enabled && (
               <div style={{
                 position: 'absolute',
-                bottom: '10px',
-                right: '10px',
-                backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                bottom: '12px',
+                right: '12px',
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
                 backdropFilter: 'blur(4px)',
                 border: '1px solid #38bdf8',
                 borderRadius: '6px',
@@ -149,25 +155,26 @@ export default function Home() {
                 color: '#38bdf8',
                 fontSize: '11px',
                 fontWeight: 'bold',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                zIndex: 10
               }}>
                 🛡️ {result.watermark.digitalSignature}
               </div>
             )}
           </div>
 
-          {/* TOMBOL DOWNLOAD GAMBAR */}
+          {/* TOMBOL DOWNLOAD GAMBAR HD */}
           <button 
             onClick={() => downloadImage(result.imageUrl, `CyberHeritage-${character.replace(/\s+/g, '_')}`)}
             style={{ 
               width: '100%', 
-              padding: '10px', 
+              padding: '12px', 
               backgroundColor: '#059669', 
               color: '#fff', 
               border: 'none', 
-              borderRadius: '6px', 
+              borderRadius: '8px', 
               fontWeight: 'bold', 
-              fontSize: '14px',
+              fontSize: '15px',
               cursor: 'pointer',
               marginBottom: '20px',
               display: 'flex',
@@ -196,7 +203,7 @@ export default function Home() {
           <h3 style={{ color: '#f8fafc', borderTop: '1px solid #334155', paddingTop: '15px', marginTop: '15px' }}>{result.storyTitle}</h3>
           <p style={{ lineHeight: '1.6', color: '#cbd5e1', fontSize: '14px' }}>{result.storyScript}</p>
 
-          {/* PEMUTAR & DOWNLOAD MUSIK BACKGROUND */}
+          {/* FITUR PEMUTAR & DOWNLOAD MUSIK */}
           <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
             <div style={{ fontSize: '13px', color: '#f59e0b', marginBottom: '8px' }}>
               🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
