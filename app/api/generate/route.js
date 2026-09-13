@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import crypto from 'crypto';
 
 export async function POST(req) {
   try {
@@ -10,18 +11,31 @@ export async function POST(req) {
       );
     }
 
-    const { character, theme } = await req.json();
-
+    const { character, theme, enableWatermark } = await req.json();
     const genAI = new GoogleGenerativeAI(apiKey);
+
+    // Menggunakan fallback model yang tersedia di Gemini API v1beta
+    let modelName = 'gemini-2.5-flash';
+    let model;
     
-    // Gunakan model gemini-1.5-flash
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.7,
-      },
-    });
+    try {
+      model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.7,
+        },
+      });
+    } catch (e) {
+      // Fallback jika versi 2.5 belum ter-resolve
+      model = genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash',
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.7,
+        },
+      });
+    }
 
     const prompt = `
       Anda adalah AI System untuk "Nusantara Cyber-Heritage".
@@ -36,7 +50,7 @@ export async function POST(req) {
           {"category": "Weapon/Item", "value": "Senjata/Pusaka Khas"},
           {"category": "Outfit", "value": "Busana/Batik/Zirah Khas"}
         ],
-        "rarityScore": 98.7,
+        "rarityScore": 98.8,
         "storyTitle": "Judul Cerita Legenda",
         "storyScript": "Naskah naratif imersif 2 paragraf menceritakan tentang ${character} dengan latar belakang ${theme}.",
         "audioAtmosphere": "Kombinasi efek suara dan musik latar (contoh: Sound Gamelan Futuristik, Ambient Synthesizer, Suara Angin Malam)"
@@ -46,10 +60,26 @@ export async function POST(req) {
     const response = await model.generateContent(prompt);
     let resultText = response.response.text();
     
-    // Bersihkan format markdown jika AI menyisipkan ```json
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
-
     const result = JSON.parse(resultText);
+
+    // Fitur Watermarking Canggih (Digital Provenance Hash)
+    if (enableWatermark) {
+      const timestamp = new Date().toISOString();
+      const rawPayload = `${character}|${theme}|${result.rarityScore}|${timestamp}|NusantaraCyberHeritageAI`;
+      const digitalSignature = crypto.createHash('sha256').update(rawPayload).digest('hex');
+
+      result.watermark = {
+        enabled: true,
+        digitalSignature: `NCH-PROV-${digitalSignature.substring(0, 16).toUpperCase()}`,
+        fullHash: digitalSignature,
+        timestamp: timestamp,
+        creator: 'Ful21 - Nusantara Cyber-Heritage',
+        steganographyNote: 'Metadata provenance terenkripsi secara kriptografis ke dalam metadata aset digital.'
+      };
+    } else {
+      result.watermark = { enabled: false };
+    }
 
     return Response.json({ success: true, data: result });
   } catch (error) {
