@@ -35,7 +35,7 @@ export default function Home() {
   };
 
   return (
-    <main style={{ padding: '20px', fontFamily: 'system-ui, sans-serif', maxWidth: '600px', margin: '0 auto', minHeight: '100vh', boxSizing: 'border-box' }}>
+    <main style={{ padding: '20px', fontFamily: 'system-ui, sans-serif', maxWidth: '650px', margin: '0 auto', minHeight: '100vh', boxSizing: 'border-box' }}>
       <h1 style={{ textAlign: 'center', fontSize: '24px', marginBottom: '20px', color: '#38bdf8' }}>
         Nusantara Cyber-Heritage AI
       </h1>
@@ -90,7 +90,7 @@ export default function Home() {
           cursor: loading ? 'not-allowed' : 'pointer'
         }}
       >
-        {loading ? '⏳ Memproses Gemini 3.6 Flash Engine...' : 'Generate Asset & Rarity (98+)'}
+        {loading ? '⏳ Memproses Visual & Gemini AI...' : 'Generate Asset & Rarity (98+)'}
       </button>
 
       {errorMsg && (
@@ -100,12 +100,42 @@ export default function Home() {
       )}
 
       {result && (
-        <div style={{ marginTop: '24px', padding: '20px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #38bdf8' }}>
+        <div style={{ marginTop: '24px', padding: '20px', borderRadius: '12px', backgroundColor: '#1e293b', border: '1px solid #38bdf8', boxSizing: 'border-box' }}>
+          
+          {/* Header Card */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h2 style={{ margin: 0, fontSize: '18px', color: '#38bdf8' }}>Mythic NFT Asset</h2>
+            <h2 style={{ margin: 0, fontSize: '20px', color: '#38bdf8' }}>Mythic Visual Asset</h2>
             <span style={{ backgroundColor: '#15803d', color: '#bbf7d0', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px' }}>
               Skor: {result.rarityScore} / 100
             </span>
+          </div>
+
+          {/* DISPLAY GAMBAR SELEBAR LAYAR CARD PORTOFOLIO */}
+          <div style={{ position: 'relative', width: '100%', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '20px', backgroundColor: '#0f172a' }}>
+            <img 
+              src={result.imageUrl} 
+              alt={character}
+              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} 
+            />
+            {/* Overlay Provenance Watermark pada Gambar */}
+            {result.watermark?.enabled && (
+              <div style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                backdropFilter: 'blur(4px)',
+                border: '1px solid #38bdf8',
+                borderRadius: '6px',
+                padding: '6px 10px',
+                color: '#38bdf8',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
+              }}>
+                🛡️ {result.watermark.digitalSignature}
+              </div>
+            )}
           </div>
           
           <h4 style={{ color: '#94a3b8', marginBottom: '5px' }}>Prompt Visual AI:</h4>
