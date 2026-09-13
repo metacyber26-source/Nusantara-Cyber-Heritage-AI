@@ -14,7 +14,6 @@ export async function POST(req) {
     const { character, theme, enableWatermark } = await req.json();
     const genAI = new GoogleGenerativeAI(apiKey);
 
-    // Menggunakan nama model Gemini 3.6 Flash sesuai rekomendasi API Google
     const model = genAI.getGenerativeModel({
       model: 'gemini-3.6-flash',
       generationConfig: {
@@ -48,6 +47,11 @@ export async function POST(req) {
     
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
     const result = JSON.parse(resultText);
+
+    // Encode prompt untuk membuat URL Image Generator
+    const encodedImagePrompt = encodeURIComponent(result.generatedPrompt);
+    // Menggunakan AI Image Renderer HD (1024x1024 / 16:9 ratio)
+    result.imageUrl = `https://image.pollinations.ai/prompt/${encodedImagePrompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
 
     // Fitur Watermarking Canggih (Digital Provenance Hash)
     if (enableWatermark) {
