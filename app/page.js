@@ -1,9 +1,35 @@
 'use client';
 import { useState } from 'react';
 
+// Daftar Preset Tema Lengkap untuk Perluasan Pasar
+const THEME_OPTIONS = [
+  { label: 'Culture of the Future (Cyberpunk / Neo-Nusantara)', value: 'Culture of the Future (Cyberpunk)' },
+  { label: 'Pelestarian Cultural Classic (Autentik & Relief)', value: 'Pelestarian Cultural Classic' },
+  { label: 'Solarpunk & Eco-Heritage (Budaya Alam Futuristik)', value: 'Solarpunk Eco-Heritage' },
+  { label: 'Steampunk & Vintage Mechanical Heritage', value: 'Steampunk Heritage' },
+  { label: 'High-Fantasy Mythic & Astral Godly', value: 'High Fantasy Mythic' },
+  { label: 'Batik Pop-Art & Modern Urban Culture', value: 'Batik Pop-Art Modern' },
+  { label: 'Minimalist Line Art & Minimal Heritage', value: 'Minimalist Line Art' },
+  { label: 'Anime & Cyber Heritage Style', value: 'Anime Cyber Heritage' }
+];
+
+// Rekomendasi Objek Budaya Umum & Populer (Preset Quick Click)
+const PRESET_OBJECTS = [
+  'Burung Merak',
+  'Ratu Shima',
+  'Gatotkaca',
+  'Garuda Pancasila',
+  'Candi Borobudur',
+  'Keris Mpu Gandring',
+  'Komodo Dragon Cyber',
+  'Angklung Bambu Gold',
+  'Reog Ponorogo',
+  'Barong Bali'
+];
+
 export default function Home() {
-  const [character, setCharacter] = useState('Ratu Shima');
-  const [theme, setTheme] = useState('Culture of the Future (Cyberpunk)');
+  const [character, setCharacter] = useState('Burung merak dengan bulunya yang indah');
+  const [theme, setTheme] = useState(THEME_OPTIONS[0].value);
   const [enableWatermark, setEnableWatermark] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -34,7 +60,6 @@ export default function Home() {
     }
   };
 
-  // Fungsi Download Gambar langsung
   const downloadImage = async (url, filename) => {
     try {
       const response = await fetch(url);
@@ -58,28 +83,58 @@ export default function Home() {
         Nusantara Cyber-Heritage AI
       </h1>
       
+      {/* Input Tokoh / Objek Budaya */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Tokoh / Objek Budaya:</label>
         <input 
           type="text" 
           value={character} 
           onChange={(e) => setCharacter(e.target.value)}
-          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '16px', boxSizing: 'border-box' }}
+          placeholder="Ketik tokoh, flora/fauna, atau arsitektur..."
+          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '15px', boxSizing: 'border-box' }}
         />
+        
+        {/* Quick Select Presets Objek Budaya */}
+        <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          <span style={{ fontSize: '12px', color: '#94a3b8', width: '100%', marginBottom: '2px' }}>💡 Pilih Cepat Objek Populer:</span>
+          {PRESET_OBJECTS.map((obj, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setCharacter(obj)}
+              style={{
+                backgroundColor: character === obj ? '#0284c7' : '#0f172a',
+                color: character === obj ? '#fff' : '#cbd5e1',
+                border: '1px solid #334155',
+                borderRadius: '16px',
+                padding: '4px 10px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              {obj}
+            </button>
+          ))}
+        </div>
       </div>
 
+      {/* Dropdown Pilihan Tema Beragam */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema:</label>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema Seni & Gaya Visual:</label>
         <select 
           value={theme} 
           onChange={(e) => setTheme(e.target.value)}
-          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '16px', boxSizing: 'border-box' }}
+          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '15px', boxSizing: 'border-box' }}
         >
-          <option value="Culture of the Future (Cyberpunk)">Culture of the Future (Cyberpunk)</option>
-          <option value="Pelestarian Cultural Classic">Pelestarian Cultural Classic</option>
+          {THEME_OPTIONS.map((item, index) => (
+            <option key={index} value={item.value}>
+              {item.label}
+            </option>
+          ))}
         </select>
       </div>
 
+      {/* Watermark Provenance Toggle */}
       <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <strong style={{ display: 'block', fontSize: '14px', color: '#f8fafc' }}>🛡️ Advanced Provenance Watermark</strong>
@@ -127,7 +182,7 @@ export default function Home() {
             </span>
           </div>
 
-          {/* KONTEN GAMBAR DENGAN MASKING PENGHAPUS WATERMARK BAWAAN */}
+          {/* Masking Gambar & Frame */}
           <div style={{ position: 'relative', width: '100%', height: '380px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
             <img 
               src={result.imageUrl} 
@@ -141,7 +196,6 @@ export default function Home() {
               }} 
             />
 
-            {/* Overlay Watermark Provenance Digital (Jika Diaktifkan) */}
             {result.watermark?.enabled && (
               <div style={{
                 position: 'absolute',
@@ -163,7 +217,6 @@ export default function Home() {
             )}
           </div>
 
-          {/* TOMBOL DOWNLOAD GAMBAR HD */}
           <button 
             onClick={() => downloadImage(result.imageUrl, `CyberHeritage-${character.replace(/\s+/g, '_')}`)}
             style={{ 
@@ -203,7 +256,6 @@ export default function Home() {
           <h3 style={{ color: '#f8fafc', borderTop: '1px solid #334155', paddingTop: '15px', marginTop: '15px' }}>{result.storyTitle}</h3>
           <p style={{ lineHeight: '1.6', color: '#cbd5e1', fontSize: '14px' }}>{result.storyScript}</p>
 
-          {/* FITUR PEMUTAR & DOWNLOAD MUSIK */}
           <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
             <div style={{ fontSize: '13px', color: '#f59e0b', marginBottom: '8px' }}>
               🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
