@@ -14,28 +14,14 @@ export async function POST(req) {
     const { character, theme, enableWatermark } = await req.json();
     const genAI = new GoogleGenerativeAI(apiKey);
 
-    // Menggunakan fallback model yang tersedia di Gemini API v1beta
-    let modelName = 'gemini-2.5-flash';
-    let model;
-    
-    try {
-      model = genAI.getGenerativeModel({
-        model: modelName,
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.7,
-        },
-      });
-    } catch (e) {
-      // Fallback jika versi 2.5 belum ter-resolve
-      model = genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.7,
-        },
-      });
-    }
+    // Menggunakan nama model Gemini 3.6 Flash sesuai rekomendasi API Google
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-3.6-flash',
+      generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.7,
+      },
+    });
 
     const prompt = `
       Anda adalah AI System untuk "Nusantara Cyber-Heritage".
