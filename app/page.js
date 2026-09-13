@@ -1,36 +1,61 @@
 'use client';
 import { useState } from 'react';
 
-// Daftar Preset Tema Lengkap untuk Perluasan Pasar
+// Options Tema dalam Bahasa Indonesia (Di balik layar dikirim prompt Inggris ke AI)
 const THEME_OPTIONS = [
-  { label: 'Culture of the Future (Cyberpunk / Neo-Nusantara)', value: 'Culture of the Future (Cyberpunk)' },
-  { label: 'Pelestarian Cultural Classic (Autentik & Relief)', value: 'Pelestarian Cultural Classic' },
-  { label: 'Solarpunk & Eco-Heritage (Budaya Alam Futuristik)', value: 'Solarpunk Eco-Heritage' },
-  { label: 'Steampunk & Vintage Mechanical Heritage', value: 'Steampunk Heritage' },
-  { label: 'High-Fantasy Mythic & Astral Godly', value: 'High Fantasy Mythic' },
-  { label: 'Batik Pop-Art & Modern Urban Culture', value: 'Batik Pop-Art Modern' },
-  { label: 'Minimalist Line Art & Minimal Heritage', value: 'Minimalist Line Art' },
-  { label: 'Anime & Cyber Heritage Style', value: 'Anime Cyber Heritage' }
+  { 
+    label: 'Masa Depan & Siber (Cyberpunk / Neo-Nusantara)', 
+    value: 'Futuristic Cyberpunk style, neon lights, glowing circuits, holographic accents, hyper-tech sci-fi aesthetic' 
+  },
+  { 
+    label: 'Klasik Autentik & Ukiran Tradisional (Pelestarian Budaya)', 
+    value: 'Authentic Classic Heritage style, ancient stone relief, traditional wood carving, royal museum lighting, detailed craftsmanship' 
+  },
+  { 
+    label: 'Alam Futuristik & Ekologis (Solarpunk)', 
+    value: 'Solarpunk Eco-Heritage style, lush greenery, bioluminescent bamboo, clean renewable tech aesthetic, natural sun rays' 
+  },
+  { 
+    label: 'Mesin Klasik & Era Uap (Steampunk Vintage)', 
+    value: 'Steampunk Vintage Mechanical style, brass gears, copper pipes, glowing vacuum tubes, Victorian era atmosphere' 
+  },
+  { 
+    label: 'Mitos Megah & Astral (High-Fantasy)', 
+    value: 'High-Fantasy Mythic style, celestial glowing aura, divine astral background, epic cinematic lighting, magical particles' 
+  },
+  { 
+    label: 'Seni Pop Modern & Motif Batik (Batik Pop-Art)', 
+    value: 'Batik Pop-Art Modern style, vibrant contrast colors, stylish graphic vector aesthetics, modern urban culture' 
+  },
+  { 
+    label: 'Garis Minimalis & Elegan (Minimalist Line Art)', 
+    value: 'Minimalist Line Art style, clean aesthetic vector lines, subtle luxury color palette, elegant simple design' 
+  },
+  { 
+    label: 'Gaya Anime & Siber Modern (Anime Cyber)', 
+    value: 'Modern Cyber Anime art style, crisp anime illustration shading, vibrant dynamic atmosphere, high detail digital art' 
+  }
 ];
 
-// Rekomendasi Objek Budaya Umum & Populer (Preset Quick Click)
-const PRESET_OBJECTS = [
+// Quick Preset Pilihan Subjek Bebas & Populer
+const PRESET_SUBJECTS = [
+  'Angklung Bambu Gold',
   'Burung Merak',
-  'Ratu Shima',
-  'Gatotkaca',
-  'Garuda Pancasila',
   'Candi Borobudur',
   'Keris Mpu Gandring',
-  'Komodo Dragon Cyber',
-  'Angklung Bambu Gold',
+  'Ratu Shima',
+  'Gatotkaca',
+  'Mobil Spor Cyberpunk',
+  'Robot Kucing AI',
   'Reog Ponorogo',
-  'Barong Bali'
+  'Naga Maskot Futuristik'
 ];
 
 export default function Home() {
-  const [character, setCharacter] = useState('Burung merak dengan bulunya yang indah');
-  const [theme, setTheme] = useState(THEME_OPTIONS[0].value);
+  const [character, setCharacter] = useState('Angklung Bambu Gold');
+  const [themeIndex, setThemeIndex] = useState(0);
   const [enableWatermark, setEnableWatermark] = useState(true);
+  const [creatorCode, setCreatorCode] = useState('Ful21');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -40,11 +65,19 @@ export default function Home() {
     setResult(null);
     setErrorMsg('');
 
+    const selectedTheme = THEME_OPTIONS[themeIndex];
+
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ character, theme, enableWatermark }),
+        body: JSON.stringify({ 
+          character, 
+          themeEnglish: selectedTheme.value,
+          themeLabelIndo: selectedTheme.label,
+          enableWatermark,
+          creatorCode
+        }),
       });
       const data = await res.json();
       
@@ -83,21 +116,23 @@ export default function Home() {
         Nusantara Cyber-Heritage AI
       </h1>
       
-      {/* Input Tokoh / Objek Budaya */}
+      {/* 2. Subjek / Objek Visual Bebas */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Tokoh / Objek Budaya:</label>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          Subjek / Objek Visual (Bebas):
+        </label>
         <input 
           type="text" 
           value={character} 
           onChange={(e) => setCharacter(e.target.value)}
-          placeholder="Ketik tokoh, flora/fauna, atau arsitektur..."
+          placeholder="Masukkan tokoh, benda mati, fauna, arsitektur, atau konsep bebas..."
           style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '15px', boxSizing: 'border-box' }}
         />
         
-        {/* Quick Select Presets Objek Budaya */}
+        {/* Preset Quick Click */}
         <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          <span style={{ fontSize: '12px', color: '#94a3b8', width: '100%', marginBottom: '2px' }}>💡 Pilih Cepat Objek Populer:</span>
-          {PRESET_OBJECTS.map((obj, i) => (
+          <span style={{ fontSize: '12px', color: '#94a3b8', width: '100%', marginBottom: '2px' }}>💡 Pilihan Cepat Subjek Populer:</span>
+          {PRESET_SUBJECTS.map((obj, i) => (
             <button
               key={i}
               type="button"
@@ -118,34 +153,51 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Dropdown Pilihan Tema Beragam */}
+      {/* 3. Dropdown Tema Bahasa Indonesia */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema Seni & Gaya Visual:</label>
         <select 
-          value={theme} 
-          onChange={(e) => setTheme(e.target.value)}
+          value={themeIndex} 
+          onChange={(e) => setThemeIndex(Number(e.target.value))}
           style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '15px', boxSizing: 'border-box' }}
         >
           {THEME_OPTIONS.map((item, index) => (
-            <option key={index} value={item.value}>
+            <option key={index} value={index}>
               {item.label}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Watermark Provenance Toggle */}
-      <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <strong style={{ display: 'block', fontSize: '14px', color: '#f8fafc' }}>🛡️ Advanced Provenance Watermark</strong>
-          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Sematkan tanda tangan digital & hash autentisitas</span>
+      {/* 4. Watermark & Fitur Kode Creator Toggle */}
+      <div style={{ marginBottom: '20px', padding: '14px', backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: enableWatermark ? '10px' : '0' }}>
+          <div>
+            <strong style={{ display: 'block', fontSize: '14px', color: '#f8fafc' }}>🛡️ Advanced Watermark & Hash Provenance</strong>
+            <span style={{ fontSize: '12px', color: '#94a3b8' }}>Sematkan verifikasi digital hash & identitas creator</span>
+          </div>
+          <input 
+            type="checkbox" 
+            checked={enableWatermark} 
+            onChange={(e) => setEnableWatermark(e.target.checked)}
+            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+          />
         </div>
-        <input 
-          type="checkbox" 
-          checked={enableWatermark} 
-          onChange={(e) => setEnableWatermark(e.target.checked)}
-          style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-        />
+
+        {enableWatermark && (
+          <div style={{ borderTop: '1px solid #334155', paddingTop: '10px', marginTop: '10px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#cbd5e1', marginBottom: '4px', fontWeight: 'bold' }}>
+              Kode Creator (Sematkan ID / Nama Pembuat):
+            </label>
+            <input 
+              type="text" 
+              value={creatorCode} 
+              onChange={(e) => setCreatorCode(e.target.value)}
+              placeholder="Contoh: Ful21 / Master-Ful"
+              style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#38bdf8', fontSize: '14px', boxSizing: 'border-box' }}
+            />
+          </div>
+        )}
       </div>
 
       <button 
@@ -163,7 +215,7 @@ export default function Home() {
           cursor: loading ? 'not-allowed' : 'pointer'
         }}
       >
-        {loading ? '⏳ Memproses Visual & Gemini AI...' : 'Generate Asset & Rarity (98+)'}
+        {loading ? '⏳ Memproses AI Generator...' : 'Generate Asset & Rarity (98+)'}
       </button>
 
       {errorMsg && (
@@ -182,7 +234,7 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Masking Gambar & Frame */}
+          {/* Masking Frame Gambar & Watermark Creator */}
           <div style={{ position: 'relative', width: '100%', height: '380px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
             <img 
               src={result.imageUrl} 
@@ -196,23 +248,30 @@ export default function Home() {
               }} 
             />
 
+            {/* Badge Watermark + Kode Creator di Pojok Kanan Bawah */}
             {result.watermark?.enabled && (
               <div style={{
                 position: 'absolute',
                 bottom: '12px',
                 right: '12px',
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                backdropFilter: 'blur(4px)',
+                backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                backdropFilter: 'blur(6px)',
                 border: '1px solid #38bdf8',
                 borderRadius: '6px',
                 padding: '6px 10px',
                 color: '#38bdf8',
                 fontSize: '11px',
                 fontWeight: 'bold',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
-                zIndex: 10
+                boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
+                zIndex: 10,
+                textAlign: 'right'
               }}>
-                🛡️ {result.watermark.digitalSignature}
+                <div>🛡️ {result.watermark.digitalSignature}</div>
+                {result.watermark.creatorCode && (
+                  <div style={{ color: '#f59e0b', fontSize: '10px', marginTop: '2px' }}>
+                    BY: {result.watermark.creatorCode.toUpperCase()}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -288,9 +347,14 @@ export default function Home() {
 
           {result.watermark?.enabled && (
             <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#0284c715', border: '1px solid #0284c7', borderRadius: '8px', fontSize: '12px', color: '#e0f2fe' }}>
-              <div style={{ fontWeight: 'bold', color: '#38bdf8', marginBottom: '4px' }}>🛡️ Digital Watermark Provenance Verified</div>
-              <div><strong>Signature:</strong> {result.watermark.digitalSignature}</div>
-              <div style={{ fontSize: '10px', color: '#94a3b8', wordBreak: 'break-all', marginTop: '4px' }}><strong>SHA256 Hash:</strong> {result.watermark.fullHash}</div>
+              <div style={{ fontWeight: 'bold', color: '#38bdf8', marginBottom: '4px' }}>
+                🛡️ Digital Provenance Hash Verified
+              </div>
+              <div><strong>Signature ID:</strong> {result.watermark.digitalSignature}</div>
+              {result.watermark.creatorCode && <div><strong>Creator ID:</strong> {result.watermark.creatorCode}</div>}
+              <div style={{ fontSize: '10px', color: '#94a3b8', wordBreak: 'break-all', marginTop: '4px' }}>
+                <strong>SHA256 Hash:</strong> {result.watermark.fullHash}
+              </div>
             </div>
           )}
         </div>
