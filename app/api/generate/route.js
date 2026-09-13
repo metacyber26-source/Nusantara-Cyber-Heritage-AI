@@ -48,12 +48,14 @@ export async function POST(req) {
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
     const result = JSON.parse(resultText);
 
-    // Encode prompt untuk membuat URL Image Generator
+    // Encode prompt untuk URL Image Generator tanpa watermark provider (&nologo=true)
     const encodedImagePrompt = encodeURIComponent(result.generatedPrompt);
-    // Menggunakan AI Image Renderer HD (1024x1024 / 16:9 ratio)
     result.imageUrl = `https://image.pollinations.ai/prompt/${encodedImagePrompt}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
 
-    // Fitur Watermarking Canggih (Digital Provenance Hash)
+    // URL audio sampel gamelan/ambient cyberpunk yang bebas hak cipta
+    result.audioUrl = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=cyberpunk-ambient-114319.mp3';
+
+    // Watermarking Provenance Digital
     if (enableWatermark) {
       const timestamp = new Date().toISOString();
       const rawPayload = `${character}|${theme}|${result.rarityScore}|${timestamp}|NusantaraCyberHeritageAI`;
