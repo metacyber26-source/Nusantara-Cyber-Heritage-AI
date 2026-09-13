@@ -34,6 +34,24 @@ export default function Home() {
     }
   };
 
+  // Fungsi khusus untuk mengunduh gambar langsung ke HP/perangkat
+  const downloadImage = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = `${filename}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <main style={{ padding: '20px', fontFamily: 'system-ui, sans-serif', maxWidth: '650px', margin: '0 auto', minHeight: '100vh', boxSizing: 'border-box' }}>
       <h1 style={{ textAlign: 'center', fontSize: '24px', marginBottom: '20px', color: '#38bdf8' }}>
@@ -110,14 +128,14 @@ export default function Home() {
             </span>
           </div>
 
-          {/* DISPLAY GAMBAR SELEBAR LAYAR CARD PORTOFOLIO */}
-          <div style={{ position: 'relative', width: '100%', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '20px', backgroundColor: '#0f172a' }}>
+          {/* DISPLAY GAMBAR SELEBAR LAYAR PORTOFOLIO */}
+          <div style={{ position: 'relative', width: '100%', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
             <img 
               src={result.imageUrl} 
               alt={character}
-              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} 
+              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', transform: 'scale(1.02)' }} 
             />
-            {/* Overlay Provenance Watermark pada Gambar */}
+            {/* Overlay Provenance Watermark Digital */}
             {result.watermark?.enabled && (
               <div style={{
                 position: 'absolute',
@@ -137,6 +155,29 @@ export default function Home() {
               </div>
             )}
           </div>
+
+          {/* TOMBOL DOWNLOAD GAMBAR */}
+          <button 
+            onClick={() => downloadImage(result.imageUrl, `CyberHeritage-${character.replace(/\s+/g, '_')}`)}
+            style={{ 
+              width: '100%', 
+              padding: '10px', 
+              backgroundColor: '#059669', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '6px', 
+              fontWeight: 'bold', 
+              fontSize: '14px',
+              cursor: 'pointer',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px'
+            }}
+          >
+            📥 Download Gambar HD
+          </button>
           
           <h4 style={{ color: '#94a3b8', marginBottom: '5px' }}>Prompt Visual AI:</h4>
           <p style={{ fontSize: '13px', backgroundColor: '#0f172a', padding: '10px', borderRadius: '6px', border: '1px solid #334155', color: '#cbd5e1', wordBreak: 'break-word' }}>
@@ -155,8 +196,35 @@ export default function Home() {
           <h3 style={{ color: '#f8fafc', borderTop: '1px solid #334155', paddingTop: '15px', marginTop: '15px' }}>{result.storyTitle}</h3>
           <p style={{ lineHeight: '1.6', color: '#cbd5e1', fontSize: '14px' }}>{result.storyScript}</p>
 
-          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#0f172a', borderRadius: '6px', fontSize: '13px', color: '#f59e0b' }}>
-            🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
+          {/* PEMUTAR & DOWNLOAD MUSIK BACKGROUND */}
+          <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
+            <div style={{ fontSize: '13px', color: '#f59e0b', marginBottom: '8px' }}>
+              🎵 <strong>Suasana Audio:</strong> {result.audioAtmosphere}
+            </div>
+            
+            <audio controls style={{ width: '100%', height: '36px', marginBottom: '8px' }} src={result.audioUrl}>
+              Browser Anda tidak mendukung elemen audio.
+            </audio>
+
+            <a 
+              href={result.audioUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              download={`Audio-${character.replace(/\s+/g, '_')}.mp3`}
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                padding: '8px',
+                backgroundColor: '#334155',
+                color: '#38bdf8',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                textDecoration: 'none'
+              }}
+            >
+              🎧 Download Musik Background (.mp3)
+            </a>
           </div>
 
           {result.watermark?.enabled && (
