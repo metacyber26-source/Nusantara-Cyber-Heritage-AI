@@ -1,21 +1,21 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req) {
   try {
     const { character, theme } = await req.json();
 
-    const systemInstruction = `
-      Anda adalah AI System untuk "Nusantara Cyber-Heritage".
-      Tugas Anda adalah memproses tokoh budaya Nusantara dan menghasilkan metadata NFT langka.
-      Output HARUS berupa JSON valid tanpa format markdown tambahan.
-    `;
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      generationConfig: { responseMimeType: 'application/json' },
+    });
 
     const prompt = `
-      Analisis tokoh: "${character}" dengan tema: "${theme}".
+      Anda adalah AI System untuk "Nusantara Cyber-Heritage".
+      Analisis tokoh budaya Nusantara: "${character}" dengan tema: "${theme}".
       
-      Hasilkan JSON dengan format persis seperti ini:
+      Hasilkan JSON valid dengan format persis seperti ini:
       {
         "generatedPrompt": "Prompt visual ultra-detail bahasa Inggris untuk image generator (cyberpunk/futuristic/classic Nusantara, 8k resolution, cinematic lighting, mythic assets)",
         "traits": [
@@ -31,19 +31,12 @@ export async function POST(req) {
       }
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        systemInstruction: systemInstruction,
-        responseMimeType: 'application/json',
-      },
-    });
+    const response = await model.generateContent(prompt);
+    const resultText = response.response.text();
+    const result = JSON.parse(resultText);
 
-    const result = JSON.parse(response.text);
     return Response.json({ success: true, data: result });
   } catch (error) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
 }
-
