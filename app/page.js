@@ -1,15 +1,15 @@
 'use client';
 import { useState } from 'react';
 
-// Options Tema dalam Bahasa Indonesia (Di balik layar dikirim prompt Inggris ke AI)
+// Options Tema dalam Bahasa Indonesia
 const THEME_OPTIONS = [
+  { 
+    label: 'Klasik Autentik & Ukiran Tradisional (Pelestarian Budaya)', 
+    value: 'Authentic Classic Heritage style, ancient stone relief, traditional wood carving, museum lighting, detailed craftsmanship' 
+  },
   { 
     label: 'Masa Depan & Siber (Cyberpunk / Neo-Nusantara)', 
     value: 'Futuristic Cyberpunk style, neon lights, glowing circuits, holographic accents, hyper-tech sci-fi aesthetic' 
-  },
-  { 
-    label: 'Klasik Autentik & Ukiran Tradisional (Pelestarian Budaya)', 
-    value: 'Authentic Classic Heritage style, ancient stone relief, traditional wood carving, royal museum lighting, detailed craftsmanship' 
   },
   { 
     label: 'Alam Futuristik & Ekologis (Solarpunk)', 
@@ -37,12 +37,11 @@ const THEME_OPTIONS = [
   }
 ];
 
-// Quick Preset Pilihan Subjek Bebas & Populer
 const PRESET_SUBJECTS = [
+  'Keris Mpu Gandring',
   'Angklung Bambu Gold',
   'Burung Merak',
   'Candi Borobudur',
-  'Keris Mpu Gandring',
   'Ratu Shima',
   'Gatotkaca',
   'Mobil Spor Cyberpunk',
@@ -52,7 +51,7 @@ const PRESET_SUBJECTS = [
 ];
 
 export default function Home() {
-  const [character, setCharacter] = useState('Angklung Bambu Gold');
+  const [character, setCharacter] = useState('Keris Mpu Gandring');
   const [themeIndex, setThemeIndex] = useState(0);
   const [enableWatermark, setEnableWatermark] = useState(true);
   const [creatorCode, setCreatorCode] = useState('Ful21');
@@ -116,7 +115,7 @@ export default function Home() {
         Nusantara Cyber-Heritage AI
       </h1>
       
-      {/* 2. Subjek / Objek Visual Bebas */}
+      {/* Input Subjek Visual */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
           Subjek / Objek Visual (Bebas):
@@ -125,11 +124,11 @@ export default function Home() {
           type="text" 
           value={character} 
           onChange={(e) => setCharacter(e.target.value)}
-          placeholder="Masukkan tokoh, benda mati, fauna, arsitektur, atau konsep bebas..."
+          placeholder="Masukkan tokoh, senjata, benda mati, atau konsep bebas..."
           style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#1e293b', color: '#fff', fontSize: '15px', boxSizing: 'border-box' }}
         />
         
-        {/* Preset Quick Click */}
+        {/* Preset Cepat */}
         <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           <span style={{ fontSize: '12px', color: '#94a3b8', width: '100%', marginBottom: '2px' }}>💡 Pilihan Cepat Subjek Populer:</span>
           {PRESET_SUBJECTS.map((obj, i) => (
@@ -153,7 +152,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 3. Dropdown Tema Bahasa Indonesia */}
+      {/* Pilihan Tema Visual */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Pilih Tema Seni & Gaya Visual:</label>
         <select 
@@ -169,7 +168,7 @@ export default function Home() {
         </select>
       </div>
 
-      {/* 4. Watermark & Fitur Kode Creator Toggle */}
+      {/* Watermark & Creator ID */}
       <div style={{ marginBottom: '20px', padding: '14px', backgroundColor: '#1e293b', borderRadius: '8px', border: '1px solid #334155' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: enableWatermark ? '10px' : '0' }}>
           <div>
@@ -193,7 +192,7 @@ export default function Home() {
               type="text" 
               value={creatorCode} 
               onChange={(e) => setCreatorCode(e.target.value)}
-              placeholder="Contoh: Ful21 / Master-Ful"
+              placeholder="Contoh: Ful21"
               style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #334155', backgroundColor: '#0f172a', color: '#38bdf8', fontSize: '14px', boxSizing: 'border-box' }}
             />
           </div>
@@ -218,9 +217,10 @@ export default function Home() {
         {loading ? '⏳ Memproses AI Generator...' : 'Generate Asset & Rarity (98+)'}
       </button>
 
+      {/* Tampilan Error yang Lebih Rapi */}
       {errorMsg && (
-        <div style={{ marginTop: '20px', padding: '15px', borderRadius: '8px', backgroundColor: '#7f1d1d', color: '#fecaca', border: '1px solid #ef4444' }}>
-          <strong>Error:</strong> {errorMsg}
+        <div style={{ marginTop: '20px', padding: '15px', borderRadius: '8px', backgroundColor: '#450a0a', color: '#fca5a5', border: '1px solid #991b1b', fontSize: '14px', lineHeight: '1.5' }}>
+          ⚠️ <strong>Pemberitahuan:</strong> {errorMsg}
         </div>
       )}
 
@@ -234,7 +234,6 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Masking Frame Gambar & Watermark Creator */}
           <div style={{ position: 'relative', width: '100%', height: '380px', borderRadius: '10px', overflow: 'hidden', border: '2px solid #0284c7', marginBottom: '12px', backgroundColor: '#0f172a' }}>
             <img 
               src={result.imageUrl} 
@@ -248,7 +247,6 @@ export default function Home() {
               }} 
             />
 
-            {/* Badge Watermark + Kode Creator di Pojok Kanan Bawah */}
             {result.watermark?.enabled && (
               <div style={{
                 position: 'absolute',
@@ -323,26 +321,6 @@ export default function Home() {
             <audio controls style={{ width: '100%', height: '36px', marginBottom: '8px' }} src={result.audioUrl}>
               Browser Anda tidak mendukung elemen audio.
             </audio>
-
-            <a 
-              href={result.audioUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              download={`Audio-${character.replace(/\s+/g, '_')}.mp3`}
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                padding: '8px',
-                backgroundColor: '#334155',
-                color: '#38bdf8',
-                borderRadius: '6px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                textDecoration: 'none'
-              }}
-            >
-              🎧 Download Musik Background (.mp3)
-            </a>
           </div>
 
           {result.watermark?.enabled && (
@@ -352,9 +330,6 @@ export default function Home() {
               </div>
               <div><strong>Signature ID:</strong> {result.watermark.digitalSignature}</div>
               {result.watermark.creatorCode && <div><strong>Creator ID:</strong> {result.watermark.creatorCode}</div>}
-              <div style={{ fontSize: '10px', color: '#94a3b8', wordBreak: 'break-all', marginTop: '4px' }}>
-                <strong>SHA256 Hash:</strong> {result.watermark.fullHash}
-              </div>
             </div>
           )}
         </div>
